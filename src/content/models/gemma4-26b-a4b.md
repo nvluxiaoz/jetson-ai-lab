@@ -48,6 +48,22 @@ serving:
           -v $HOME/.cache/huggingface:/root/.cache/huggingface \
           ghcr.io/nvidia-ai-iot/llama_cpp:latest-jetson-thor \
           llama-server -hf ggml-org/gemma-4-26B-A4B-it-GGUF:Q4_K_M
+    - engine: "Edge-LLM"
+      type: "Container"
+      modules_supported:
+        - thor_t5000
+      install_command: |-
+        mkdir -p "$HOME/tensorrt-edgellm-workspace" "$HOME/.cache/huggingface"
+        curl -fsSL https://www.jetson-ai-lab.com/code-samples/tensorrt_edge_llm/run_model.sh -o "$HOME/run-edgellm-model"
+        chmod +x "$HOME/run-edgellm-model"
+      serve_command_thor: |-
+        sudo docker run -it --rm --pull always --runtime=nvidia --network host \
+          -v "$HOME/run-edgellm-model:/usr/local/bin/run-edgellm-model:ro" \
+          -v "tensorrt-edgellm-091-build:/opt/TensorRT-Edge-LLM/build" \
+          -v "$HOME/tensorrt-edgellm-workspace:/data/edgellm" \
+          -v "$HOME/.cache/huggingface:/data/models/huggingface" \
+          ghcr.io/nvidia-ai-iot/edge_llm:0.9.1-cu132-sm110 \
+          run-edgellm-model nvidia/Gemma-4-26B-A4B-NVFP4 --stage serve
 benchmark_key: "Gemma 4 26B-A4B"
 benchmark_series:
   - "Gemma 4 E2B"
@@ -74,7 +90,7 @@ Gemma 4 26B-A4B is a larger Gemma 4 variant that can be served on Jetson with `l
 
 ## Inference Engine
 
-This model is configured to run on Jetson with `vLLM` and `llama.cpp`.
+This model is configured to run on Jetson with `vLLM`, `llama.cpp`, and TensorRT Edge-LLM.
 
 ## Official Highlights
 

@@ -71,6 +71,23 @@ supported_inference_engines:
         -v $HOME/.cache/huggingface:/root/.cache/huggingface \
         ghcr.io/nvidia-ai-iot/llama_cpp:latest-jetson-thor \
         llama-server -hf Kbenkhaled/Cosmos-Reason2-2B-GGUF:Q8_0 -c 8192
+  - engine: "Edge-LLM"
+    type: "Container"
+    modules_supported:
+      - thor_t5000
+    install_command: |-
+      mkdir -p "$HOME/tensorrt-edgellm-workspace" "$HOME/.cache/huggingface"
+      curl -fsSL https://www.jetson-ai-lab.com/code-samples/tensorrt_edge_llm/run_model.sh -o "$HOME/run-edgellm-model"
+      chmod +x "$HOME/run-edgellm-model"
+    serve_command_thor: |-
+      sudo docker run -it --rm --pull always --runtime=nvidia --network host \
+        -e HF_TOKEN="$HF_TOKEN" \
+        -v "$HOME/run-edgellm-model:/usr/local/bin/run-edgellm-model:ro" \
+        -v "tensorrt-edgellm-091-build:/opt/TensorRT-Edge-LLM/build" \
+        -v "$HOME/tensorrt-edgellm-workspace:/data/edgellm" \
+        -v "$HOME/.cache/huggingface:/data/models/huggingface" \
+        ghcr.io/nvidia-ai-iot/edge_llm:0.9.1-cu132-sm110 \
+        run-edgellm-model cagataydev/cosmos-reason2-2b-fp8-hf --stage serve
 benchmark_key: "Cosmos Reasoning 2 2B"
 benchmark_series:
   - "Cosmos Reasoning 2 8B"
@@ -87,13 +104,9 @@ benchmark_series:
 
 ## Inputs and Outputs
 
-**Input:**
-- Text prompts and images
-- Supports video frame analysis via `--media-io-kwargs`
+**Input:** Text, images, and ordered video frames
 
-**Output:**
-- Generated text with chain-of-thought reasoning traces
-- Spatial analysis, anomaly detection results, and scene descriptions
+**Output:** Generated text with reasoning traces, spatial analysis, anomaly detection results, and scene descriptions
 
 ## Running with vLLM
 
@@ -245,4 +258,3 @@ sudo docker run -it --rm --pull always --runtime=nvidia --network host \
 
 - [NGC FP8 Checkpoint](https://catalog.ngc.nvidia.com/orgs/nim/teams/nvidia/models/cosmos-reason2-2b/files?version=1208-fp8-static-kv8) - FP8 quantized model for vLLM
 - [Live VLM WebUI](https://github.com/NVIDIA-AI-IOT/live-vlm-webui) - real-time webcam-to-VLM interface
-

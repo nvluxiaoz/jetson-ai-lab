@@ -11,7 +11,7 @@ vision_capable: true
 memory_requirements: "16GB RAM"
 precision: "NVFP4 / Q4_0 QAT GGUF"
 parameters: "12B"
-modalities: ["Text", "Image"]
+modalities: ["Text", "Image", "Audio"]
 context_length: "256K"
 license: "Apache 2.0"
 model_size: "10GB"
@@ -78,13 +78,13 @@ benchmark_series:
 Gemma 4 12B is Google's mid-size dense Gemma 4 model — the step up from the edge-sized E2B/E4B variants for workloads that need stronger reasoning while fitting on a single Jetson. This page covers the **NVFP4** checkpoint for vLLM on Thor (efficient 4-bit inference on Blackwell) and Google's official **quantization-aware-trained Q4_0 GGUF** for llama.cpp on Thor and AGX Orin.
 
 - Local assistants and RAG that outgrow the E-series models
-- Document, chart, and image understanding workloads
+- Document, chart, image, and audio understanding workloads
 - Coding help and repository Q&A on Thor- and Orin-class devices
 - General-purpose reasoning where MoE routing overhead isn't wanted
 
 ## Inputs and Outputs
 
-**Input:** Text and image
+**Input:** Text, images, and audio
 
 **Output:** Text
 
